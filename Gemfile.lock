@@ -48,6 +48,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  parser
   rake (~> 13.0)
   rake-compiler
   rspec (~> 3.0)

@@ -12,3 +12,5 @@ gem "rake-compiler"
 gem "rspec", "~> 3.0"
 
 gem "rubocop", "~> 1.21"
+
+gem "parser"
