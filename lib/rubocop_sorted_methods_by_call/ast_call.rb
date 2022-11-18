@@ -1,4 +1,4 @@
-# frozen_string_literal: false
+# frozen_string_literal: true
 
 require "parser/current"
 
@@ -8,6 +8,8 @@ module RubocopSortedMethodsByCall
   class Processor < AST::Processor
     attr_reader :trace, :methods_list
 
+    # +@trace+ Represents expected AST nodes.
+    # +@methods_list+ Represents real AST nodes.
     # @return [Array]
     def initialize
       super
@@ -15,9 +17,16 @@ module RubocopSortedMethodsByCall
       @methods_list = []
     end
 
-    # +Processor#on_begin(node)+                        -> Array
+    # +Processor#on_begin(node)+                      -> Array
     #
-    # @param [AST::Node] node An object representing node
+    # This method is invoked when +Processor+ object encounters a +:begin+ AST
+    # structure during tree parsing. It handles the root of AST, so we should
+    # to iterate through its children to find out other nodes to get access to
+    # their attributes.
+    #
+    # @api private
+    # @overload on_begin(node)
+    # @param [AST::Node] node An object representing node.
     # @return [Array]
     #
     # @see AST::Node#on_begin
@@ -27,9 +36,15 @@ module RubocopSortedMethodsByCall
       end
     end
 
-    # +Processor#handler_missing(node)+                 -> String
+    # +Processor#handler_missing(node)+               -> String
     #
-    # @param [AST::Node] node An object representing node
+    # This method is invoked when +Processor+ object encounters unhandled AST
+    # structure. If there is no handler for node type, this method will be
+    # invoked immediately.
+    #
+    # @api private
+    # @overload handler_missing(node)
+    # @param [AST::Node] node An object representing node.
     # @return [String, nil]
     #
     # @see AST::Node#handler_missing
@@ -37,9 +52,18 @@ module RubocopSortedMethodsByCall
       puts "missing #{node.type}"
     end
 
-    # +Processor#on_def(node)+                          -> Object
+    # +Processor#on_def(node)+                        -> Object
     #
-    # @param [Object] node
+    # This method is invoked when +Processor+ object encounters a +:def+ AST
+    # node during tree parsing. It represents method definition in object's
+    # message protocol. Current implementation of this handler processing method
+    # names in real AST. It handles method names in trace when they are invoked
+    # in single-line methods as well as with multi-line methods.
+    #
+    # @api private
+    # @overload on_def(node)
+    # @param [Object] node An object representing +:def+ node.
+    # @raise [NoMethodError] if child is not real node.
     # @return [Object]
     #
     # @see AST::Node#on_def
@@ -55,9 +79,18 @@ module RubocopSortedMethodsByCall
       end
     end
 
-    # +Processor#on_send(node)+                         -> Array
+    # +Processor#on_send(node)+                       -> Array
     #
-    # @param [Object] node
+    # This method is invoked during +:send+ instruction during AST parsing.
+    # According to Alan Kay's theory of object computation, each object can
+    # receive and send messages to other objects representing objects in
+    # real life. Ruby has the same object representation such as Smalltalk and
+    # other message-oriented languages. Current method puts into array method
+    # names in real AST.
+    #
+    # @api private
+    # @overload on_send(node)
+    # @param [Object] node An object representing +:send+ node.
     # @return [Array]
     #
     # @see AST::Node#on_send
@@ -65,11 +98,11 @@ module RubocopSortedMethodsByCall
       @trace << node.children[1]
     end
 
-    # +Processor#ordered?+                              -> TrueClass, FalseClass
+    # +Processor#ordered?+                            -> TrueClass, FalseClass
     #
     # This method was made to check if methods in AST are defined in right order.
     # The right order in our case is defined by stack trace or by method call
-    # position in other words.
+    # position in other words. It compares real AST nodes with expected.
     #
     # @return [TrueClass, FalseClass]
     def ordered?
