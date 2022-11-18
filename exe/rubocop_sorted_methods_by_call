@@ -1,0 +1,3 @@
+#!/usr/bin/env ruby
+
+require "rubocop_sorted_methods_by_call"
