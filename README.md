@@ -153,6 +153,7 @@ ast.ordered? #=> false
 - [ ] Add detection for method overriding (namespace pollutions)
 - [ ] Support for method calling inside of params
 - [ ] Refactor code base
+- [ ] Make more examples for specs
 
 ## Development
 
