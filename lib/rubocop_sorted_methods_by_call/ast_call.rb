@@ -137,7 +137,7 @@ module RubocopSortedMethodsByCall
     #
     # @return [TrueClass, FalseClass]
     def ordered?
-      @methods_list.compare(@trace)
+      @methods_list.eql?(@trace)
     end
   end
 end
