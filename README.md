@@ -150,6 +150,7 @@ ast.ordered? #=> false
 - [ ] Add modules support
 - [ ] Add nested structures support
 - [ ] Add standalone method support (without invoking another methods inside)
+- [ ] Add detection for method overriding (namespace pollutions)
 - [ ] Support for method calling inside of params
 - [ ] Refactor code base
 
