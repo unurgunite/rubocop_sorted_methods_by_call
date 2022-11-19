@@ -1,20 +1,35 @@
 # frozen_string_literal: true
 
-require "parser/current"
-
 module RubocopSortedMethodsByCall
   # The +Processor+ class is corresponding for analyzing method
   # definition/call trace.
   class Processor < AST::Processor
     attr_reader :trace, :methods_list
 
-    # +@trace+ Represents expected AST nodes.
     # +@methods_list+ Represents real AST nodes.
+    # +@trace+ Represents expected AST nodes.
     # @return [Array]
     def initialize
       super
-      @trace = []
-      @methods_list = []
+      @methods_list = {}
+      @trace = {}
+    end
+
+    # +Processor#process(node)+                       -> value
+    #
+    # This method processes nodes during AST iterating.
+    #
+    # @overload process(node)
+    # @param [AST::Node] node An object representing node.
+    # @param [Symbol] name An object representing structure name.
+    # @return [Object]
+    #
+    # @see Processor#on_def
+    # @see AST::Processor#process
+    def process(node, *name)
+      return on_def(node, name[0]) if node.type == :def
+
+      [super(node), name[0]]
     end
 
     # +Processor#on_begin(node)+                      -> Array
@@ -30,9 +45,10 @@ module RubocopSortedMethodsByCall
     # @return [Array]
     #
     # @see AST::Node#on_begin
-    def on_begin(node)
-      node.children.each do |c|
-        process(c)
+    def on_begin(node, *name)
+      name = name.first || :main
+      node&.children&.each do |c|
+        process(c, name)
       end
     end
 
@@ -63,17 +79,18 @@ module RubocopSortedMethodsByCall
     # @api private
     # @overload on_def(node)
     # @param [Object] node An object representing +:def+ node.
-    # @raise [NoMethodError] if child is not real node.
+    # @raise [NoMethodError] if child is not a real node.
     # @return [Object]
     #
     # @see AST::Node#on_def
-    def on_def(node)
-      @methods_list << node.children.first
+    def on_def(node, *name)
+      name = name.first || :main
+      @methods_list.deep_merge({ name => node.children.first })
       invoked_methods = node.children[2]
-      invoked_methods.children.each do |c|
-        return @trace << c if c.is_a? Symbol
+      invoked_methods&.children&.each do |c|
+        return @trace.deep_merge({ name => c }) if c.is_a? Symbol
 
-        on_send(c) if c.type == :send
+        on_send(c, name) if c.type == :send
       rescue NoMethodError
         next
       end
@@ -91,11 +108,25 @@ module RubocopSortedMethodsByCall
     # @api private
     # @overload on_send(node)
     # @param [Object] node An object representing +:send+ node.
-    # @return [Array]
+    # @return [Hash]
     #
     # @see AST::Node#on_send
-    def on_send(node)
-      @trace << node.children[1]
+    def on_send(node, name)
+      @trace.deep_merge({ name || :main => node.children[1] })
+    end
+
+    # +Processor#on_class(node)+                      -> value
+    #
+    # This method is invoked during +:class+ instruction during AST parsing.
+    # It evaluate class name and parse its methods.
+    #
+    # @api private
+    # @overload on_class(node)
+    # @param [AST::Node] node An object representing +:class+ node.
+    # @return [Object]
+    def on_class(node)
+      class_name = "class_#{node.children.first.children.last}".to_sym
+      on_begin(node.children[2], class_name)
     end
 
     # +Processor#ordered?+                            -> TrueClass, FalseClass
@@ -106,7 +137,7 @@ module RubocopSortedMethodsByCall
     #
     # @return [TrueClass, FalseClass]
     def ordered?
-      @methods_list & @trace == @trace
+      @methods_list.compare(@trace)
     end
   end
 end
