@@ -2,6 +2,11 @@
 
 ![Alt](https://repobeats.axiom.co/api/embed/7926fec94bffd7fcaa69700fb9464ed96cf69083.svg "Repobeats analytics image")
 
+# ! WARNING !
+
+**This project is not updated yet and needs some improvements in code semantics. If you able to help this project, fork
+it and make pull requests.**
+
 Welcome to the rubocop_sorted_methods_by_call gem! This repo contains main sources of project.
 
 ## Documentation content
@@ -13,6 +18,7 @@ Welcome to the rubocop_sorted_methods_by_call gem! This repo contains main sourc
         2. [Automatic installation][2.1.2]
     2. [Build via bundler][2.2]
 3. [Usage][3]
+    1. [Code examples][3.1]
 4. [Todo][4]
 5. [Development][5]
 6. [Requirements][6]
@@ -92,10 +98,59 @@ gem install rubocop_sorted_methods_by_call
 
 All docs are available at the separate page: https://unurgunite.github.io/rubocop_sorted_methods_by_call_docs/
 
+### Code examples
+
+Positive case:
+
+```ruby
+# file.rb
+def foo
+  bar
+end
+
+def bar
+  123
+end
+
+# main.rb
+require "parser/current"
+
+code = Parser::CurrentRuby.parse(File.read("file.rb"))
+ast = RubocopSortedMethodsByCall::Processor.new
+ast.process(code)
+ast.ordered? #=> true
+```
+
+Negative case:
+
+```ruby
+# file.rb
+def bar
+  123
+end
+
+def foo
+  bar
+end
+
+# main.rb
+require "parser/current"
+
+code = Parser::CurrentRuby.parse(File.read("file.rb"))
+ast = RubocopSortedMethodsByCall::Processor.new
+ast.process(code)
+ast.ordered? #=> false
+```
+
 ## TODO
 
 - [ ] Add recursion support
 - [ ] Add classes support
+- [ ] Add struct support
+- [ ] Add modules support
+- [ ] Add nested structures support
+- [ ] Add standalone method support (without invoking another methods inside)
+- [ ] Support for method calling inside of params
 - [ ] Refactor code base
 
 ## Development
@@ -203,6 +258,8 @@ the [New BSD License](https://opensource.org/licenses/BSD-3-Clause)
 [2.2]:https://github.com/unurgunite/rubocop_sorted_methods_by_call#build-via-bundler
 
 [3]:https://github.com/unurgunite/rubocop_sorted_methods_by_call#usage
+
+[3.1]:https://github.com/unurgunite/rubocop_sorted_methods_by_call#code-examples
 
 [4]:https://github.com/unurgunite/rubocop_sorted_methods_by_call#todo
 
