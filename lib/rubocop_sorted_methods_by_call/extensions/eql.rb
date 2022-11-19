@@ -13,10 +13,9 @@ class Hash # :nodoc:
   def eql?(other)
     return unless other.is_a? Hash
 
-    to_a
-    other.to_a
+    [self, other].each(&:to_a)
     values.each_with_index do |arr, i|
-      next if arr & (v = other.values[i]) == v
+      next if arr & (v = other.values[i]) == v || v.any? { |el| !arr.include?(el) }
 
       return false
     end
