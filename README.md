@@ -129,8 +129,8 @@ For the development purposes `rubocop_sorted_methods_by_call` gem uses:
 1. [RSpec][201]
 2. [RuboCop][202]
 3. [Rake][203]
-4. [YARD][205]
-5. [Parser][206]
+4. [YARD][204]
+5. [Parser][205]
 
 Description:
 
