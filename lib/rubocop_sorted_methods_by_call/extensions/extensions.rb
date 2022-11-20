@@ -2,6 +2,7 @@
 
 require "parser/current"
 
+require_relative "subset"
 require_relative "to_a"
 require_relative "deep_merge"
 require_relative "eql"
