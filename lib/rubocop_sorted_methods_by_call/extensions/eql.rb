@@ -26,7 +26,7 @@ class Hash # :nodoc:
   def eql?(other)
     return unless other.is_a? Hash
 
-    [self, other].each(&:to_a)
+    [self, other].each(&:values_and_self_to_array!)
     values.each_with_index do |arr, i|
       if (general_slice = arr & (val = other.values[i])) == val || val.any? { |el| !arr.include?(el) }
         return false unless arr.subset?(general_slice)

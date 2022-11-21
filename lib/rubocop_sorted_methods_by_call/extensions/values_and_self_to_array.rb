@@ -6,10 +6,8 @@ class Hash # :nodoc:
   # This method transforms each hash value into array and call original #to_a
   # method.
   #
-  # @overload to_a
   # @return [Array]
-  def to_a
-    transform_values! { |v| Array(v) }
-    super
+  def values_and_self_to_array!
+    transform_values! { |v| Array(v) }.to_a
   end
 end
