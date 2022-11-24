@@ -88,7 +88,7 @@ module RubocopSortedMethodsByCall
       @methods_list.deep_merge({ name => node.children.first })
       invoked_methods = node.children[2]
       invoked_methods&.children&.each do |c|
-        return @trace.deep_merge({ name => c }) if c.is_a? Symbol
+        return @trace.deep_merge({ name => c }) if c.is_a?(Symbol) && (invoked_methods.type != :lvar || c.type != :lvar)
 
         on_send(c, name) if c.type == :send
       rescue NoMethodError
@@ -111,8 +111,8 @@ module RubocopSortedMethodsByCall
     # @return [Hash]
     #
     # @see AST::Node#on_send
-    def on_send(node, name)
-      @trace.deep_merge({ name || :main => node.children[1] })
+    def on_send(node, *name)
+      @trace.deep_merge({ name[0] || :main => node.children[1] })
     end
 
     # +Processor#on_class(node)+                      -> value
