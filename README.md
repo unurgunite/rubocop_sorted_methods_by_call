@@ -173,33 +173,21 @@ requirements for common use and requirements for the development purposes.
 
 The `rubocop_sorted_methods_by_call` gem is built on top of another gem:
 
-1. [Parser][101]
-
-Description:
-
-* Parser is used to build AST for future structure identifying.
+| Dependencies  | Description                                                   |
+|---------------|---------------------------------------------------------------|
+| [Parser][101] | Parser is used to build AST for future structure identifying. |
 
 ### Development purposes
 
 For the development purposes `rubocop_sorted_methods_by_call` gem uses:
 
-1. [RSpec][201]
-2. [RuboCop][202]
-3. [Rake][203]
-4. [YARD][204]
-5. [Parser][205]
-
-Description:
-
-* The RSpec gem is used for test which are located in a separate folder under `spec` name.
-
-* The RuboCop gem is used for code formatting.
-
-* The Rake gem is used for building tasks as generating documentation.
-
-* The YARD gem is used for the documentation.
-
-* The Parser gem is used for building AST.
+| Dependencies   | Description                                                                              |
+|----------------|------------------------------------------------------------------------------------------|
+| [RSpec][201]   | The RSpec gem is used for test which are located in a separate folder under `spec` name. |
+| [RuboCop][202] | The RuboCop gem is used for code formatting.                                             |
+| [Rake][203]    | The Rake gem is used for building tasks as generating documentation.                     |                                                                                             |
+| [YARD][204]    | The YARD gem is used for the documentation.                                              |
+| [Parser][205]  | The Parser gem is used for building AST.                                                 |
 
 ## Project style guide
 
